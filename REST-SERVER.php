@@ -1,13 +1,42 @@
 <?php
 
 //Buscamos la autenticación en los encabezados HTTP
+/*
 $user = array_key_exists( 'PHP_AUTH_USER', $_SERVER ) ? $_SERVER['PHP_AUTH_USER'] : '' ;
 $pwd = array_key_exists( 'PHP_AUTH_PW', $_SERVER ) ? $_SERVER['PHP_AUTH_PW'] : '' ;
 
 if( $user !== 'mauro' || $pwd !== '12345'){
 
     die;
+}*/
+
+//Autenticaciónm HMAC
+//Verfico que la información recibida tenga un hash, una marca de tiempo y el id del usuario
+if(
+    !array_key_exists('HTTP_X_HASH', $_SERVER) ||
+    !array_key_exists('HTTP_X_TIMESTAMP', $_SERVER) ||
+    !array_key_exists('HTTP_X_UID', $_SERVER)
+){
+    die;
 }
+
+list( $hash, $uid, $timestamp ) = [
+    $_SERVER['HTTP_X_HASH'],
+    $_SERVER['HTTP_X_UID'],
+    $_SERVER['HTTP_X_TIMESTAMP']
+]; //Armamos un arreglo para guardar las variables del servidor en variables locales
+
+//Secreto que solo deberían tener el cliente y el servidor
+$secret = 'Esto es un secreto';
+
+//Funcion de hash conocida por el cliente y servidor
+$newHash = sha1($uid.$timestamp.$secret);//concatenamos la informacion
+
+//comparamos si ambops hashes son iguales para autorizar acceso
+if( $newHash !== $hash){
+    die; //No autorizamos acceso a los recursos
+}
+
 //Definimos los recursos disponibles
 $allowedResourceType = [
     'books',
