@@ -29,3 +29,9 @@ Para reemplazar un recurso
 `$ curl -X 'DELETE' http://localhost:8001/books/1` 
 
 Para eliminar un recurso
+
+## *Auth HTTP*
+
+`curl http://mauro:12345@localhost:8001/books`
+
+Autenticacion HTTP, no es la más segura puesto que la información del usuario viaja publicamente
