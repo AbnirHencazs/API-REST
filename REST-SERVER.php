@@ -12,6 +12,7 @@ if( $user !== 'mauro' || $pwd !== '12345'){
 
 //Autenticaciónm HMAC
 //Verfico que la información recibida tenga un hash, una marca de tiempo y el id del usuario
+/*
 if(
     !array_key_exists('HTTP_X_HASH', $_SERVER) ||
     !array_key_exists('HTTP_X_TIMESTAMP', $_SERVER) ||
@@ -35,6 +36,37 @@ $newHash = sha1($uid.$timestamp.$secret);//concatenamos la informacion
 //comparamos si ambops hashes son iguales para autorizar acceso
 if( $newHash !== $hash){
     die; //No autorizamos acceso a los recursos
+}
+*/
+
+//Autenticacion por token
+if( !array_key_exists('HTTP_X_TOKEN', $_SERVER) ){
+    die();
+}
+
+$url = 'http://localhost:8002';
+
+$ch = curl_init( $url ); //Iniciamos solicitud a servidor de autenticacion
+curl_setopt(
+    $ch,
+    CURLOPT_HTTPHEADER,
+    [
+        "X_Token: {$_SERVER['HTTP_X_TOKEN']}"
+    ]
+); //Pasamos el token por cabecera
+
+//Seteamos otra opción que nos permitira obtener el resultado de lo que el servidor de autenticacion nos esta devolviendo
+curl_setopt(
+    $ch,
+    CURLOPT_RETURNTRANSFER,
+    true
+);
+
+$ret = curl_exec( $ch );
+
+if( $ret !== 'true' ){
+
+    die('No autorizado');
 }
 
 //Definimos los recursos disponibles
