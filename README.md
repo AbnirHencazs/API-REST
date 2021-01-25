@@ -47,3 +47,19 @@ Una vez obtenido los datos, procedemos a incluirlos en los _headers_ de la solic
 `$ curl http://localhost:8001/books -H 'X_HASH: e4241ba1c7652e83ffd2ba4ababe8397d5f57c0d' -H 'X-UID: 1' -H 'X-TIMESTAMP: 1611590461'`
 
 Éste tipo de autenticación es de las más seguras
+
+## *Auth Access tokens*
+
+Para usar la autenticación vía access tokens es necesario agregar un servidor de autenticación _separado_ del servidor de recursos, la función de dicho servidor será la de aceptar solicitudes POST para otorgar un token al cliente y por otro lado aceptar solicitudes GET, de parte del servidor de recursos, para corroborar que en efecto el token del cliente es valido.
+
+Para correr el servidor de autenticación simplemente correr éste script (en un puerto diferente al servidor de recursos):
+
+`$ php -S localhost:8002 auth_server.php`
+
+Para obtener _el_ token de acceso es necesario hacer una solicitud donde pasemos el user id y el secreto por los headers:
+
+`$ curl http://localhost:8002 -X 'POST' -H 'X-Client-Id: 1' -H 'X-Secret:SecretoDeEstado'`
+
+Para obtener acceso a los recursos es necesario hacer una solicitud donde pasemos _el_ token por los headers:
+
+`$ curl http://localhost:8001/books -H 'X-Token: 5d0937455b6744.68357201'`
