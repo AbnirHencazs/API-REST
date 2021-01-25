@@ -32,6 +32,18 @@ Para eliminar un recurso
 
 ## *Auth HTTP*
 
-`curl http://mauro:12345@localhost:8001/books`
+`$ curl http://mauro:12345@localhost:8001/books`
 
 Autenticacion HTTP, no es la más segura puesto que la información del usuario viaja publicamente
+
+## *Auth HMAC*
+
+Para usar la autenticación HMAC es necesario pasar en los encabezados de la solicitud un hash, un id de usuario y una etiqueta de tiempo. Para generar el hash y la etiqueta de tiempo puedes correr el siguiente script pasandole el id de usuario como parametro:
+
+`$ php generate_has.php 1`
+
+Una vez obtenido los datos, procedemos a incluirlos en los _headers_ de la solicitud: 
+
+`$ curl http://localhost:8001/books -H 'X_HASH: e4241ba1c7652e83ffd2ba4ababe8397d5f57c0d' -H 'X-UID: 1' -H 'X-TIMESTAMP: 1611590461'`
+
+Éste tipo de autenticación es de las más seguras
